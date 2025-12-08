@@ -1,3 +1,6 @@
+//Package mathlib provides functions for mathematics operations
+//It includes fucntions for additon,subtraction,division and multiplication
+
 package mathlib
 
 import (
