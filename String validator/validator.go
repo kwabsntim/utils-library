@@ -24,7 +24,7 @@ func IsEmail(email string) error {
 	}
 	//parsing the email
 	if _, err := mail.ParseAddress(email); err != nil {
-		return errors.New("Invalid email format")
+		return errors.New("invalid email format")
 	}
 	return nil
 
@@ -81,6 +81,98 @@ func HasLengthRange(s string, minLength, maxLength int, customMessage string) er
 			return errors.New(customMessage)
 		}
 		return fmt.Errorf("string must be at most %d characters long, got %d", maxLength, length)
+	}
+	return nil
+}
+
+// ValidatePhoneNumber validates phone number format
+func ValidatePhoneNumber(phone string, customMessage string) error {
+	phone = strings.TrimSpace(phone)
+	phoneRegex := regexp.MustCompile(`^\+?[1-9]\d{1,14}$`)
+	if !phoneRegex.MatchString(phone) {
+		if customMessage != "" {
+			return errors.New(customMessage)
+		}
+		return errors.New("invalid phone number format")
+	}
+	return nil
+}
+
+// ValidateURL validates URL format
+func ValidateURL(url string, customMessage string) error {
+	url = strings.TrimSpace(url)
+	urlRegex := regexp.MustCompile(`^https?://[^\s/$.?#].[^\s]*$`)
+	if !urlRegex.MatchString(url) {
+		if customMessage != "" {
+			return errors.New(customMessage)
+		}
+		return errors.New("invalid URL format")
+	}
+	return nil
+}
+
+// ValidatePassword validates password strength
+func ValidatePassword(password string, customMessage string) error {
+	password = strings.TrimSpace(password)
+
+	if len(password) < 8 {
+		if customMessage != "" {
+			return errors.New(customMessage)
+		}
+		return errors.New("password must be at least 8 characters")
+	}
+
+	if !upperRegex.MatchString(password) {
+		if customMessage != "" {
+			return errors.New(customMessage)
+		}
+		return errors.New("password must contain uppercase letter")
+	}
+
+	if !lowerRegex.MatchString(password) {
+		if customMessage != "" {
+			return errors.New(customMessage)
+		}
+		return errors.New("password must contain lowercase letter")
+	}
+
+	if !numberRegex.MatchString(password) {
+		if customMessage != "" {
+			return errors.New(customMessage)
+		}
+		return errors.New("password must contain number")
+	}
+
+	return nil
+}
+
+// ValidateUsername validates username format
+func ValidateUsername(username string, customMessage string) error {
+	username = strings.TrimSpace(username)
+	if len(username) < 3 {
+		if customMessage != "" {
+			return errors.New(customMessage)
+		}
+		return errors.New("username must be at least 3 characters")
+	}
+	if !usernameRegex.MatchString(username) {
+		if customMessage != "" {
+			return errors.New(customMessage)
+		}
+		return errors.New("username can only contain letters, numbers, and underscores")
+	}
+	return nil
+}
+
+// IsAlphanumeric checks if string contains only letters and numbers
+func IsAlphanumeric(s string, customMessage string) error {
+	s = strings.TrimSpace(s)
+	alphanumericRegex := regexp.MustCompile(`^[a-zA-Z0-9]+$`)
+	if !alphanumericRegex.MatchString(s) {
+		if customMessage != "" {
+			return errors.New(customMessage)
+		}
+		return errors.New("string must contain only letters and numbers")
 	}
 	return nil
 }
