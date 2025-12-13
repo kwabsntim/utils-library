@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	stringvalidator "github.com/kwabsntim/personal-libraries/string-validator"
+	stringvalidator "github.com/kwabsntim/utils-library/string-validator"
 )
 
 //------------ EXAMPLE TESTS ----------------------
