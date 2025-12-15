@@ -6,6 +6,8 @@ import (
 	"net/mail"
 	"regexp"
 	"strings"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var (
@@ -178,7 +180,7 @@ func IsAlphanumeric(s string, customMessage string) error {
 }
 
 // ValidateID validates various ID formats (UUID, ObjectID, numeric ID)
-func ValidateID(id string, customMessage string) error {
+func ValidateID(id primitive.ObjectID, customMessage string) error {
 	id = strings.TrimSpace(id)
 
 	if id == "" {
