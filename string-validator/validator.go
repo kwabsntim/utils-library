@@ -176,3 +176,38 @@ func IsAlphanumeric(s string, customMessage string) error {
 	}
 	return nil
 }
+
+// ValidateID validates various ID formats (UUID, ObjectID, numeric ID)
+func ValidateID(id string, customMessage string) error {
+	id = strings.TrimSpace(id)
+
+	if id == "" {
+		if customMessage != "" {
+			return errors.New(customMessage)
+		}
+		return errors.New("ID cannot be empty")
+	}
+
+	// Check for UUID format (8-4-4-4-12 hex digits)
+	uuidRegex := regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
+	if uuidRegex.MatchString(id) {
+		return nil
+	}
+
+	// Check for MongoDB ObjectID format (24 hex characters)
+	objectIdRegex := regexp.MustCompile(`^[0-9a-fA-F]{24}$`)
+	if objectIdRegex.MatchString(id) {
+		return nil
+	}
+
+	// Check for numeric ID (positive integers)
+	numericIdRegex := regexp.MustCompile(`^[1-9]\d*$`)
+	if numericIdRegex.MatchString(id) {
+		return nil
+	}
+
+	if customMessage != "" {
+		return errors.New(customMessage)
+	}
+	return errors.New("invalid ID format - must be UUID, ObjectID, or numeric")
+}

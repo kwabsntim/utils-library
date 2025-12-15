@@ -110,6 +110,25 @@ func ExampleIsAlphanumeric() {
 	}
 	// Output: Valid
 }
+func ExampleValidateID() {
+	err := stringvalidator.ValidateID("507f1f77bcf86cd799439011", "")
+	if err != nil {
+		fmt.Println("Invalid ID")
+	} else {
+		fmt.Println("Valid ID")
+	}
+	// Output: Valid ID
+}
+
+func ExampleValidateID_uuid() {
+	err := stringvalidator.ValidateID("550e8400-e29b-41d4-a716-446655440000", "")
+	if err != nil {
+		fmt.Println("Invalid ID")
+	} else {
+		fmt.Println("Valid ID")
+	}
+	// Output: Valid ID
+}
 
 //------------ UNIT TESTS ----------------------
 
@@ -333,6 +352,43 @@ func TestIsAlphanumeric(t *testing.T) {
 		}
 	}
 }
+func TestValidateID(t *testing.T) {
+	tests := []struct {
+		id       string
+		expected bool
+	}{
+		// MongoDB ObjectID (24 hex chars)
+		{"507f1f77bcf86cd799439011", true},
+		{"60d5ec49f1b2c8b1f8e4e1a1", true},
+
+		// UUID format
+		{"550e8400-e29b-41d4-a716-446655440000", true},
+		{"6ba7b810-9dad-11d1-80b4-00c04fd430c8", true},
+
+		// Numeric ID
+		{"123", true},
+		{"999999", true},
+
+		// Invalid cases
+		{"", false},                                 // empty
+		{"   ", false},                              // whitespace only
+		{"507f1f77bcf86cd79943901", false},          // ObjectID too short
+		{"507f1f77bcf86cd799439011z", false},        // ObjectID with invalid char
+		{"550e8400-e29b-41d4-a716", false},          // UUID incomplete
+		{"550e8400e29b41d4a716446655440000", false}, // UUID without dashes
+		{"0", false},                                // numeric starting with 0
+		{"abc", false},                              // random string
+		{"123abc", false},                           // mixed alphanumeric
+	}
+
+	for _, test := range tests {
+		err := stringvalidator.ValidateID(test.id, "")
+		isValid := err == nil
+		if isValid != test.expected {
+			t.Errorf("ValidateID(%q) = %v, expected %v", test.id, isValid, test.expected)
+		}
+	}
+}
 
 func TestCustomMessages(t *testing.T) {
 	customMsg := "Custom error message"
@@ -348,6 +404,10 @@ func TestCustomMessages(t *testing.T) {
 	}
 
 	err = stringvalidator.ValidatePassword("weak", customMsg)
+	if err == nil || err.Error() != customMsg {
+		t.Errorf("Expected custom message %q, got %v", customMsg, err)
+	}
+	err = stringvalidator.ValidateID("invalid", customMsg)
 	if err == nil || err.Error() != customMsg {
 		t.Errorf("Expected custom message %q, got %v", customMsg, err)
 	}
