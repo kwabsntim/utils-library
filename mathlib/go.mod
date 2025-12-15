@@ -1,3 +1,3 @@
-module github.com/kwabsntim/personal-libraries/mathlib
+module github.com/kwabsntim/utils-library/mathlib
 
 go 1.23.2

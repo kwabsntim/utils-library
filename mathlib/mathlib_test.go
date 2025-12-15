@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/kwabsntim/personal-libraries/mathlib"
+	"github.com/kwabsntim/utils-library/mathlib"
 )
 
 //------------ EXAMPLE TESTS ----------------------
