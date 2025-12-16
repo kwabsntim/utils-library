@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	stringvalidator "github.com/kwabsntim/utils-library/string-validator"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 //------------ EXAMPLE TESTS ----------------------
@@ -110,8 +111,8 @@ func ExampleIsAlphanumeric() {
 	}
 	// Output: Valid
 }
-func ExampleValidateID() {
-	err := stringvalidator.ValidateID("507f1f77bcf86cd799439011", "")
+func ExampleValidateIDString() {
+	err := stringvalidator.ValidateIDString("507f1f77bcf86cd799439011", "")
 	if err != nil {
 		fmt.Println("Invalid ID")
 	} else {
@@ -120,14 +121,25 @@ func ExampleValidateID() {
 	// Output: Valid ID
 }
 
-func ExampleValidateID_uuid() {
-	err := stringvalidator.ValidateID("550e8400-e29b-41d4-a716-446655440000", "")
+func ExampleValidateIDString_uuid() {
+	err := stringvalidator.ValidateIDString("550e8400-e29b-41d4-a716-446655440000", "")
 	if err != nil {
 		fmt.Println("Invalid ID")
 	} else {
 		fmt.Println("Valid ID")
 	}
 	// Output: Valid ID
+}
+
+func ExampleValidateObjectID() {
+	objectID, _ := primitive.ObjectIDFromHex("507f1f77bcf86cd799439011")
+	err := stringvalidator.ValidateObjectID(objectID, "")
+	if err != nil {
+		fmt.Println("Invalid ObjectID")
+	} else {
+		fmt.Println("Valid ObjectID")
+	}
+	// Output: Valid ObjectID
 }
 
 //------------ UNIT TESTS ----------------------
@@ -352,7 +364,7 @@ func TestIsAlphanumeric(t *testing.T) {
 		}
 	}
 }
-func TestValidateID(t *testing.T) {
+func TestValidateIDString(t *testing.T) {
 	tests := []struct {
 		id       string
 		expected bool
@@ -382,10 +394,42 @@ func TestValidateID(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		err := stringvalidator.ValidateID(test.id, "")
+		err := stringvalidator.ValidateIDString(test.id, "")
 		isValid := err == nil
 		if isValid != test.expected {
-			t.Errorf("ValidateID(%q) = %v, expected %v", test.id, isValid, test.expected)
+			t.Errorf("ValidateIDString(%q) = %v, expected %v", test.id, isValid, test.expected)
+		}
+	}
+}
+
+func TestValidateObjectID(t *testing.T) {
+	tests := []struct {
+		idHex    string
+		expected bool
+	}{
+		// Valid ObjectID hex strings
+		{"507f1f77bcf86cd799439011", true},
+		{"60d5ec49f1b2c8b1f8e4e1a1", true},
+		{"000000000000000000000000", false}, // Zero ObjectID
+	}
+
+	for _, test := range tests {
+		var objectID primitive.ObjectID
+		var err error
+		
+		if test.idHex == "000000000000000000000000" {
+			objectID = primitive.NilObjectID
+		} else {
+			objectID, err = primitive.ObjectIDFromHex(test.idHex)
+			if err != nil {
+				t.Fatalf("Failed to create ObjectID from hex %q: %v", test.idHex, err)
+			}
+		}
+
+		err = stringvalidator.ValidateObjectID(objectID, "")
+		isValid := err == nil
+		if isValid != test.expected {
+			t.Errorf("ValidateObjectID(%q) = %v, expected %v", test.idHex, isValid, test.expected)
 		}
 	}
 }
@@ -407,7 +451,12 @@ func TestCustomMessages(t *testing.T) {
 	if err == nil || err.Error() != customMsg {
 		t.Errorf("Expected custom message %q, got %v", customMsg, err)
 	}
-	err = stringvalidator.ValidateID("invalid", customMsg)
+	err = stringvalidator.ValidateIDString("invalid", customMsg)
+	if err == nil || err.Error() != customMsg {
+		t.Errorf("Expected custom message %q, got %v", customMsg, err)
+	}
+
+	err = stringvalidator.ValidateObjectID(primitive.NilObjectID, customMsg)
 	if err == nil || err.Error() != customMsg {
 		t.Errorf("Expected custom message %q, got %v", customMsg, err)
 	}

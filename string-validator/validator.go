@@ -179,8 +179,8 @@ func IsAlphanumeric(s string, customMessage string) error {
 	return nil
 }
 
-// ValidateID validates various ID formats (UUID, ObjectID, numeric ID)
-func ValidateID(id primitive.ObjectID, customMessage string) error {
+// ValidateIDString validates various string ID formats (UUID, ObjectID hex, numeric ID)
+func ValidateIDString(id string, customMessage string) error {
 	id = strings.TrimSpace(id)
 
 	if id == "" {
@@ -212,4 +212,19 @@ func ValidateID(id primitive.ObjectID, customMessage string) error {
 		return errors.New(customMessage)
 	}
 	return errors.New("invalid ID format - must be UUID, ObjectID, or numeric")
+}
+
+// ValidateObjectID validates MongoDB primitive.ObjectID (checks if not nil/zero)
+func ValidateObjectID(id primitive.ObjectID, customMessage string) error {
+	// Check if it's the zero/nil ObjectID
+	if id == primitive.NilObjectID {
+		if customMessage != "" {
+			return errors.New(customMessage)
+		}
+		return errors.New("ObjectID cannot be empty")
+	}
+
+	// ObjectID is already validated by MongoDB driver when created
+	// If it exists and is not nil, it's valid
+	return nil
 }
