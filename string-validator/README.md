@@ -375,13 +375,17 @@ MIT License
 
 ## Changelog
 
-### v1.2.0
+### v1.1.0
 - Added `ValidateIDString` function for string ID validation
 - Added `ValidateObjectID` function for MongoDB ObjectID validation
-- Replaced old `ValidateID` function with two specialized functions
-
-### v1.1.0
-- Added `ValidateID` function for UUID, ObjectID, and numeric ID validation
 
 ### v1.0.0
+- Initial release with core validation functions
+- Email validation
+- String length validation (IsEmpty, Minlength, Maxlength, HasLengthRange)
+- Password strength validation
+- Username validation
+- Phone number validation
+- URL validation
+- Alphanumeric validation.0.0
 - Initial release with basic validation functions
